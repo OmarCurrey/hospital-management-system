@@ -8,7 +8,7 @@ Course:
     ITT103 - Programming Techniques
 
 GitHub Public URL to Code:
-    https://github.com/YOUR-GITHUB-USERNAME/hospital-management-system
+    https://github.com/OmarCurrey/hospital-management-system
 
 -------------------------------------------------------------
 
