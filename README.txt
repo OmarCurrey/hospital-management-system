@@ -1,4 +1,4 @@
-Authors:
+Author:
     Omar Currey
 
 Date Created:
