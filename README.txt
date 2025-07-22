@@ -38,7 +38,7 @@ PROGRAM FUNCTIONALITIES
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 HOW TO RUN
-1. Python 3 is must be installed on your computer
+1. Python 3 must be installed on your computer.
 2. Download the program file and save it as HospitalManagementSystem.py
 3. Open a terminal or command prompt.
 4. Navigate to the folder containing the file.
