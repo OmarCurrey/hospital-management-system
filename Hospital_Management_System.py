@@ -14,9 +14,6 @@ class Person:
     def display(self):
         print(f"Name: {self.name}, Age: {self.age}, Gender: {self.gender}")
 
-# -------------------------
-# PATIENT CLASS
-# -------------------------
 # This is a more specific person - a patient
 # It inherits (takes over) everything from Person
 class Patient(Person):
@@ -40,16 +37,18 @@ class Patient(Person):
         else:
             print("No appointments.")
 
-# -------------------------
-# DOCTOR CLASS
-# -------------------------
+
 # This is a specific person - a doctor
 class Doctor(Person):
     def __init__(self, name, age, gender, speciality, schedule):
-        super().__init__(name, age, gender)
-        self.doctor_id = f"D{uuid.uuid4().hex[:6].upper()}"  # unique doctor ID
-        self.speciality = speciality  # e.g., cardiologist
-        self.schedule = schedule  # list of available times e.g. ["2025-07-15 14:00"]
+        # Check if the doctor's age is more than 80
+        if age > 80:
+            raise ValueError("Doctor's age cannot be greater than 80.")
+
+        super().__init__(name, age, gender)  # Initialize the base Person class
+        self.doctor_id = f"DR{uuid.uuid4().hex[:6].upper()}"  # Generate unique doctor ID
+        self.speciality = speciality  # Doctor's field, e.g., cardiologist
+        self.schedule = schedule  # List of available appointment times
 
     # Checks if the doctor is free at a given time
     def is_available(self, date_time):
@@ -72,9 +71,7 @@ class Doctor(Person):
         for slot in self.schedule:
             print(f" - {slot}")
 
-# -------------------------
-# APPOINTMENT CLASS
-# -------------------------
+
 # This connects a patient with a doctor at a certain time
 class Appointment:
     def __init__(self, patient, doctor, date, time):
@@ -94,9 +91,7 @@ class Appointment:
         self.status = "Cancelled"
         print(f"Appointment {self.appointment_id} has been cancelled.")
 
-# -------------------------
-# HOSPITAL SYSTEM CLASS
-# -------------------------
+
 # This is the main system that handles patients, doctors, appointments
 class HospitalSystem:
     def __init__(self):
@@ -104,18 +99,28 @@ class HospitalSystem:
         self.doctors = {}     # dictionary to store doctors using their IDs
         self.appointments = {}  # dictionary for appointments
 
-    # -------------------------
-    # PATIENT MANAGEMENT
-    # -------------------------
+
     # Adds a new patient to the system
     def add_patient(self):
         try:
             name = input("Enter patient name: ")
+
+            # Check if name contains only letters and spaces
+            if not all(char.isalpha() or char.isspace() for char in name):
+                raise ValueError("Name must contain letters and spaces only (no numbers or special characters).")
+
             age = int(input("Enter patient age: "))
+
+            # Check if age is valid (not greater than 110)
+            if age > 120:
+                raise ValueError("Age must not be greater than 110.")
+
             gender = input("Enter patient gender: ")
+
             patient = Patient(name, age, gender)
             self.patients[patient.patient_id] = patient
             print(f"Patient registered successfully with ID: {patient.patient_id}")
+
         except ValueError as e:
             print(f"Error: {e}")
 
@@ -128,9 +133,7 @@ class HospitalSystem:
         else:
             print("Patient ID not found.")
 
-    # -------------------------
-    # DOCTOR MANAGEMENT
-    # -------------------------
+
     # Adds a new doctor to the system
     def add_doctor(self):
         try:
@@ -155,9 +158,7 @@ class HospitalSystem:
         else:
             print("Doctor ID not found.")
 
-    # -------------------------
-    # APPOINTMENT MANAGEMENT
-    # -------------------------
+
     # Books an appointment for a patient with a doctor
     def book_appointment(self):
         patient_id = input("Enter patient ID: ")
@@ -204,45 +205,74 @@ class HospitalSystem:
         else:
             print("Invalid appointment ID or already cancelled.")
 
-    # -------------------------
-    # BILLING
-    # -------------------------
+
     # Generates a bill for an appointment
     def generate_bill(self):
         appointment_id = input("Enter appointment ID to generate bill: ")
         appointment = self.appointments.get(appointment_id)
+
         if not appointment:
             print("Appointment not found.")
             return
-        print("\n----- HEALTHYLIFE HOSPITAL RECEIPT -----")
+
+        print("\n🌹🌿🌹🌿🌹🌿🌹🌿HEALTHY LIFE HOSPITAL RECEIPT🌿🌹🌿🌹🌿🌹🌿🌹")
         print(f"Patient: {appointment.patient.name}")
         print(f"Doctor: Dr. {appointment.doctor.name}")
         print(f"Date: {appointment.date}, Time: {appointment.time}")
         print("Consultation Fee: JMD$ 3000")
+
         try:
             additional = float(input("Enter additional service fees (tests, meds): JMD$ "))
+            if additional < 0:
+                raise ValueError("Additional fee must be 0 or more.")
         except ValueError:
-            print("Invalid input, setting to 0.")
+            print("Invalid input. Additional fees set to 0.")
             additional = 0.0
-        total = 3000 + additional
-        print(f"Total Due: JMD$ {total}")
-        print("----------------------------------------\n")
 
-# -------------------------
-# MAIN MENU
-# -------------------------
+        total = 3000 + additional
+        print(f"Total Amount Due: JMD$ {total}")
+
+        # Show payment method options
+        print("\nSelect Payment Method:")
+        print("1. Cash")
+        print("2. Card")
+        payment_choice = input("Enter option (1 or 2): ").strip()
+
+        if payment_choice == "1":
+            try:
+                amount_given = float(input("Enter cash amount given: JMD$ "))
+                if amount_given < total:
+                    print(f"Insufficient amount. You still owe JMD$ {total - amount_given:.2f}")
+                else:
+                    change = amount_given - total
+                    print(f"Payment received: JMD$ {amount_given}")
+                    print(f"Change returned: JMD$ {change:.2f}")
+            except ValueError:
+                print("Invalid amount entered. Transaction cancelled.")
+        elif payment_choice == "2":
+                pin = input("Please enter your 4-digit PIN: ")
+                if not pin.isdigit():
+                    print("PIN must contain numbers only. Transaction cancelled.")
+                elif len(pin) != 4:
+                    print("PIN must be exactly 4 digits. Transaction cancelled.")
+                else:
+                    print("Card payment accepted. No change required.")
+
 # This is the main menu that runs repeatedly
 def main_menu(system):
     while True:
-        print("\n=== HOSPITAL MANAGEMENT SYSTEM ===")
-        print("1. Add New Patient")
-        print("2. Add New Doctor")
-        print("3. Book Appointment")
-        print("4. Cancel Appointment")
-        print("5. Generate Bill")
-        print("6. View Patient Profile")
-        print("7. View Doctor Schedule")
-        print("8. Exit")
+        print("\n🌺🌺🌺 HEALTHY LIFE HOSPITAL MANAGEMENT SYSTEM 🌺🌺🌺")
+        print("          🎯106 Hope Road, Kingston JM🎯")
+        print("                ☎  +1876-999-8909")
+
+        print("1. Add New Patient 👨‍👩‍👧‍👦")
+        print("2. Add New Doctor 🩺")
+        print("3. Book Appointment 📅")
+        print("4. Cancel Appointment ❌")
+        print("5. Generate Bill 🧾💳")
+        print("6. View Patient Profile 📖")
+        print("7. View Doctor Schedule 📄")
+        print("8. Exit 🔚")
         choice = input("Select an option: ")
 
         if choice == "1":
@@ -260,14 +290,13 @@ def main_menu(system):
         elif choice == "7":
             system.view_doctor_schedule()
         elif choice == "8":
-            print("Goodbye!")
+
+            print("😊😊😊Thank you for using Healthy Life Hospital🏥 Management System, Goodbye!😊😊😊")
             break
         else:
             print("Invalid choice. Try again.")
 
-# -------------------------
 # RUN THE PROGRAM
-# -------------------------
 if __name__ == "__main__":
     hospital_system = HospitalSystem()
     main_menu(hospital_system)
